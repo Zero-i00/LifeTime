@@ -1,0 +1,27 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "alembic>=1.18.4",
+    "asyncpg>=0.31.0",
+    "bcrypt>=5.0.0",
+    "fastapi[all]>=0.129.0",
+    "pyjwt>=2.11.0",
+    "sqlalchemy>=2.0.46",
+]
+
+[tool.setuptools.packages.find]
+where = ["backend/src"]
+include = ["*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["backend/src"]
+
+[tool.mypy]
+mypy_path = ["backend/src"]
+
+[project.optional-dependencies]
+dev = ["watchfiles"]
