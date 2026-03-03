@@ -1,12 +1,11 @@
 services:
   db:
     image: postgres:17.4-alpine
+    container_name: db
     volumes:
       - db:/var/lib/postgresql/data
     env_file:
       - .env
-#    ports:
-#      - "${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}"
     networks:
       - app-network
     restart: unless-stopped
@@ -17,12 +16,13 @@ services:
       retries: 5
 
   backend:
+    container_name: backend
     build:
       context: .
       dockerfile: docker/local/Dockerfile
     depends_on:
       db:
-          condition: service_healthy
+        condition: service_healthy
     volumes:
       - .:/app
     env_file:
