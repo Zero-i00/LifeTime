@@ -22,6 +22,8 @@ class TariffModel(Base):
     link_limit: Mapped[int] = mapped_column(default=0)
     project_limit: Mapped[int] = mapped_column(default=0)
 
+    is_initial: Mapped[bool] = mapped_column(default=False)
+
     price: Mapped[Decimal] = mapped_column(DECIMAL(10, 2))
     old_price: Mapped[Optional[Decimal]] = mapped_column(DECIMAL(10, 2))
 

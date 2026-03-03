@@ -11,6 +11,8 @@ class UserSchemaIn(BaseModel):
     password: str
     full_name: str
 
+    tariff_id: int
+    last_login_at: datetime.datetime
 
 class UserSchemaUpdate(UserSchemaIn):
     email: Optional[EmailStr] = None
@@ -20,6 +22,6 @@ class UserSchemaUpdate(UserSchemaIn):
 class UserSchemaOut(BaseModel):
     id: int
     full_name: str
-    email: EmailStr
+    email: str
     tariff: TariffSchemaOut
     last_login_at: datetime.datetime

@@ -10,6 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models.user import UserModel
+from modules.tariff.service import tariff_service
 from modules.user.schema import UserSchemaOut, UserSchemaIn, UserSchemaUpdate
 from utils.normalize import normalize_email
 
@@ -93,13 +94,21 @@ class UserService:
 
     @staticmethod
     def to_schema(obj: UserModel) -> UserSchemaOut:
-        return UserSchemaOut.model_validate(obj)
+        return UserSchemaOut(
+            id=obj.id,
+            email=obj.email,
+            full_name=obj.full_name,
+            last_login_at=obj.last_login_at,
+            tariff=tariff_service.to_schema(obj.tariff),
+        )
 
     @staticmethod
     def to_model(obj: UserSchemaIn) -> UserModel:
         return UserModel(
             email=normalize_email(str(obj.email)),
             full_name=obj.full_name,
+            tariff_id=obj.tariff_id,
+            last_login_at=obj.last_login_at,
         )
 
 

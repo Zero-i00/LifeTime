@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 from modules.user.schema import UserSchemaOut
 
@@ -14,9 +14,15 @@ class TokenType(Enum):
     BEARER = "Bearer"
 
 
-class AuthSchemaIn(BaseModel):
-    email: str
+class LoginSchemaIn(BaseModel):
+    email: EmailStr
     password: str
+
+
+class RegisterSchemaIn(BaseModel):
+    email: EmailStr
+    password: str
+    full_name: str
 
 
 class AuthSchemaOut(BaseModel):

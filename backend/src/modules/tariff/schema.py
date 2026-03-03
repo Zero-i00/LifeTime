@@ -11,6 +11,8 @@ class TariffSchemaIn(BaseModel):
     link_limit: int
     project_limit: int
 
+    is_initial: bool
+
 
 class TariffSchemaOut(BaseModel):
     id: int

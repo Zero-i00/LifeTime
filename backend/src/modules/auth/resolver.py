@@ -5,8 +5,9 @@ from fastapi import (
     APIRouter,
 )
 from database.session import AsyncSessionDep
-from modules.auth.schema import AuthSchemaOut, AuthSchemaIn
+from modules.auth.schema import AuthSchemaOut, LoginSchemaIn, RegisterSchemaIn
 from modules.auth.service import auth_service
+from modules.user.service import user_service
 
 
 class AuthResolver:
@@ -20,18 +21,18 @@ class AuthResolver:
     async def register(
         response: Response,
         session: AsyncSessionDep,
-        data: AuthSchemaIn
+        data: RegisterSchemaIn
     ) -> AuthSchemaOut:
         user = await auth_service.register(session, data)
 
-        access_token = auth_service.create_access_token(session)
+        access_token = auth_service.create_access_token(user)
 
-        refresh_token = auth_service.create_refresh_token(session)
+        refresh_token = auth_service.create_refresh_token(user)
         auth_service.set_refresh_token_to_cookie(response, refresh_token)
 
         return AuthSchemaOut(
-            user=user,
             access_token=access_token,
+            user=user_service.to_schema(user),
         )
 
     @staticmethod
@@ -39,18 +40,18 @@ class AuthResolver:
     async def login(
         response: Response,
         session: AsyncSessionDep,
-        data: AuthSchemaIn
+        data: LoginSchemaIn
     ) -> AuthSchemaOut:
         user = await auth_service.login(session, data)
 
-        access_token = auth_service.create_access_token(session)
+        access_token = auth_service.create_access_token(user)
 
-        refresh_token = auth_service.create_refresh_token(session)
+        refresh_token = auth_service.create_refresh_token(user)
         auth_service.set_refresh_token_to_cookie(response, refresh_token)
 
         return AuthSchemaOut(
-            user=user,
             access_token=access_token,
+            user=user_service.to_schema(user),
         )
 
     @staticmethod
@@ -71,14 +72,14 @@ class AuthResolver:
     ) -> AuthSchemaOut:
         user = await auth_service.refresh(session, request)
 
-        access_token = auth_service.create_access_token(session)
+        access_token = auth_service.create_access_token(user)
 
-        refresh_token = auth_service.create_refresh_token(session)
+        refresh_token = auth_service.create_refresh_token(user)
         auth_service.set_refresh_token_to_cookie(response, refresh_token)
 
         return AuthSchemaOut(
-            user=user,
             access_token=access_token,
+            user=user_service.to_schema(user),
         )
 
 
