@@ -1,7 +1,7 @@
 import datetime
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 from modules.tariff.schema import TariffSchemaOut
 
@@ -25,3 +25,5 @@ class UserSchemaOut(BaseModel):
     email: str
     tariff: TariffSchemaOut
     last_login_at: datetime.datetime
+
+    model_config = ConfigDict(from_attributes=True)

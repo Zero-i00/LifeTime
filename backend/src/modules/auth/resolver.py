@@ -64,8 +64,8 @@ class AuthResolver:
 
 
     @staticmethod
-    @router.post("/refresh", status_code=status.HTTP_200_OK)
-    async def refresh(
+    @router.post("/refresh_token", status_code=status.HTTP_200_OK)
+    async def refresh_token(
         request: Request,
         response: Response,
         session: AsyncSessionDep,

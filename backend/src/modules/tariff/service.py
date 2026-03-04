@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import TariffModel
-from modules.tariff.schema import TariffSchemaOut
+from modules.tariff.schema import TariffSchemaOut, TariffSchemaIn
 
 
 class TariffService:
@@ -17,8 +17,6 @@ class TariffService:
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Tariff not found"
         )
-
-
 
     async def list(self, session: AsyncSession) -> Sequence[TariffModel]:
         query = select(TariffModel)
@@ -43,8 +41,28 @@ class TariffService:
 
         return tariff
 
+    async def create(self, session: AsyncSession, obj: TariffSchemaIn) -> TariffModel:
+        tariff = self.to_model(obj)
+
+        session.add(tariff)
+        await session.commit()
+        await session.refresh(tariff)
+
+        return tariff
+
     @staticmethod
     def to_schema(obj: type[TariffModel]) -> TariffSchemaOut:
         return TariffSchemaOut.model_validate(obj)
+
+    @staticmethod
+    def to_model(obj: TariffSchemaIn) -> TariffModel:
+        return TariffModel(
+            title=obj.title,
+            description=obj.description,
+            price=obj.price,
+            old_price=obj.old_price,
+            link_limit=obj.link_limit,
+            project_limit=obj.project_limit,
+        )
 
 tariff_service = TariffService()
