@@ -14,7 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import settings, IS_DEBUG
 from database.models.user import UserModel
-from modules.auth.schema import LoginSchemaIn, TokenEnum, RegisterSchemaIn
+from modules.auth.schema import LoginSchemaIn, TokenEnum, RegisterSchemaIn, AccessTokenPayload, RefreshTokenPayload
 from modules.auth.strategies.token import token_strategy
 from modules.tariff.service import tariff_service
 from modules.user.schema import UserSchemaIn
@@ -65,32 +65,33 @@ class AuthService:
 
         return user
 
-    async def logout(self, session: AsyncSession) -> None:
+    async def logout(self, session: AsyncSession) -> bool:
         # TODO jwt refresh token black list
-        pass
+        return True
 
 
     async def refresh(self, session: AsyncSession, request: Request) -> UserModel:
         payload = self.get_refresh_payload(request)
 
-        user_id = payload.get('user_id', None)
+        user_id = payload.user_id
         if user_id is None:
             raise self.invalid_token_exception
 
         user = await user_service.retrieve(session, user_id)
         return user
 
-    def get_access_token_payload(self, credentials: HTTPAuthorizationCredentials = Depends(http_bearer)) -> dict:
+    def get_access_token_payload(self, credentials: HTTPAuthorizationCredentials = Depends(http_bearer)) -> AccessTokenPayload:
         access_token = credentials.credentials
 
         try:
-            return token_strategy.decode_jwt(
+            payload = token_strategy.decode_jwt(
                 token=access_token
             )
+            return AccessTokenPayload.model_validate(payload)
         except jwt.InvalidTokenError as e:
             raise self.invalid_token_exception
 
-    def get_refresh_payload(self, reqeust: Request) -> dict:
+    def get_refresh_payload(self, reqeust: Request) -> RefreshTokenPayload:
         token = reqeust.cookies.get(TokenEnum.REFRESH_TOKEN.value, None)
         if token is None:
             raise self.invalid_token_exception
@@ -99,27 +100,25 @@ class AuthService:
         if payload is None:
             raise self.invalid_token_exception
 
-        return payload
+        return RefreshTokenPayload.model_validate(payload)
 
 
     @staticmethod
     def create_access_token(user: UserModel) -> str:
-        payload = {
-            'sub': user.email,
-            'user_id': user.id,
-            'email': user.email,
-            'type': TokenEnum.ACCESS_TOKEN.value
-        }
+        payload = AccessTokenPayload(
+            sub=user.email,
+            user_id=user.id,
+            email=user.email,
+        ).model_dump()
 
         return token_strategy.encode_jwt(payload)
 
     @staticmethod
     def create_refresh_token(user: UserModel) -> str:
-        payload = {
-            'sub': user.email,
-            'user_id': user.id,
-            'type': TokenEnum.REFRESH_TOKEN.value
-        }
+        payload = RefreshTokenPayload(
+            sub=user.email,
+            user_id=user.id,
+        ).model_dump()
 
         return token_strategy.encode_jwt(
             payload=payload,

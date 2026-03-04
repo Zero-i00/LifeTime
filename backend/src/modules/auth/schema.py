@@ -14,6 +14,19 @@ class TokenType(Enum):
     BEARER = "Bearer"
 
 
+class AccessTokenPayload(BaseModel):
+    sub: str
+    email: str
+    user_id: int
+    token_type: TokenEnum = TokenEnum.ACCESS_TOKEN.value
+
+
+class RefreshTokenPayload(BaseModel):
+    sub: str
+    user_id: int
+    token_type: TokenEnum = TokenEnum.REFRESH_TOKEN.value
+
+
 class LoginSchemaIn(BaseModel):
     email: EmailStr
     password: str

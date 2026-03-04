@@ -16,6 +16,7 @@ class AuthResolver:
         tags=["Auth"],
     )
 
+
     @staticmethod
     @router.post("/register", status_code=status.HTTP_200_OK)
     async def register(
@@ -60,7 +61,6 @@ class AuthResolver:
         session: AsyncSessionDep,
     ) -> None:
         await auth_service.logout(session)
-
 
 
     @staticmethod
