@@ -13,7 +13,6 @@ RUN uv sync --frozen
 
 COPY ../../ .
 
+RUN chmod +x ./docker/local/entrypoint.sh
 
-RUN sed -i 's/\r$//' ./docker/local/entrypoint.sh && chmod +x ./docker/local/entrypoint.sh
-
-ENTRYPOINT ["./docker/local/entrypoint.sh"]
+ENTRYPOINT ["bash", "./docker/local/entrypoint.sh"]
