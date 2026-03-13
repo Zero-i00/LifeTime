@@ -63,6 +63,7 @@ class TariffService:
             old_price=obj.old_price,
             link_limit=obj.link_limit,
             project_limit=obj.project_limit,
+            is_initial=True
         )
 
 tariff_service = TariffService()
