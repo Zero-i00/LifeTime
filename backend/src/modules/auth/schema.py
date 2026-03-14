@@ -19,7 +19,7 @@ class AccessTokenPayload(BaseModel):
     sub: str
     email: str
     user_id: int
-    role: UserRole
+    role: str
     token_type: TokenEnum = TokenEnum.ACCESS_TOKEN.value
 
 

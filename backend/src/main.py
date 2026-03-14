@@ -1,11 +1,22 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, APIRouter
 from config import settings, IS_DEBUG
+from database.seeder import run_seeders
 from modules.auth.resolver import auth_resolver
 from modules.user.resolver import user_resolver
 from modules.tariff.resolver import tariff_resolver
 
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    await run_seeders()
+    yield
+
+
 app = FastAPI(
-    title=settings.app.name
+    title=settings.app.name,
+    lifespan=lifespan,
 )
 
 api_v1_router = APIRouter(

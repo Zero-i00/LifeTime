@@ -26,6 +26,6 @@ class UserSchemaOut(BaseModel):
     email: str
     tariff: TariffSchemaOut
     last_login_at: datetime.datetime
-    role: UserRole
+    role: str
 
     model_config = ConfigDict(from_attributes=True)

@@ -1,14 +1,15 @@
 import datetime
 from decimal import Decimal
+from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 
 class TariffSchemaIn(BaseModel):
     title: str
-    description: str
+    description: Optional[str] = None
 
     price: Decimal
-    old_price: Decimal
+    old_price: Optional[Decimal] = None
 
     link_limit: int
     project_limit: int

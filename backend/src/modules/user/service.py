@@ -100,6 +100,7 @@ class UserService:
             full_name=obj.full_name,
             last_login_at=obj.last_login_at,
             tariff=tariff_service.to_schema(obj.tariff),
+            role=obj.role,
         )
 
     @staticmethod
