@@ -13,6 +13,12 @@ class ProjectSchemaIn(BaseModel):
 class ProjectSchemaUpdate(BaseModel):
     name: Optional[str] = None
 
+
+class ProjectSchemaFilter(BaseModel):
+    name: Optional[str] = None
+    user_id: Optional[int] = None
+
+
 class ProjectSchemaOut(ProjectSchemaIn):
     id: int
 
