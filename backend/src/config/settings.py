@@ -60,10 +60,46 @@ class AppSettings(BaseSettings):
         extra="ignore",
     )
 
+class S3Settings(BaseSettings):
+    access_key: str = Field(alias="S3_ACCESS_KEY")
+    secret_key: str = Field(alias="S3_SECRET_KEY")
+    endpoint_url: str = Field(alias="S3_ENDPOINT_URL")
+    link_statistic_bucket: str = Field("link-statistic-bucket-1", alias="S3_LINK_STATISTIC_BUCKET")
+
+    model_config = SettingsConfigDict(
+        env_file=BASE_DIR / ".env",
+        extra="ignore",
+    )
+
+
+class RedisSettings(BaseSettings):
+    host: str = Field("localhost", alias="REDIS_HOST")
+    port: int = Field(6379, alias="REDIS_PORT")
+
+    model_config = SettingsConfigDict(
+        env_file=BASE_DIR / ".env",
+        extra="ignore",
+    )
+
+
+class WorkerSettings(BaseSettings):
+    check_interval_seconds: int = Field(300, alias="WORKER_CHECK_INTERVAL_SECONDS")
+    request_timeout_seconds: int = Field(10, alias="WORKER_REQUEST_TIMEOUT_SECONDS")
+    max_concurrent_checks: int = Field(20, alias="WORKER_MAX_CONCURRENT_CHECKS")
+
+    model_config = SettingsConfigDict(
+        env_file=BASE_DIR / ".env",
+        extra="ignore",
+    )
+
+
 class Settings(BaseSettings):
     app: AppSettings = AppSettings()
     auth: AuthSettings = AuthSettings()
     db: DatabaseSettings = DatabaseSettings()
+    s3: S3Settings = S3Settings()
+    redis: RedisSettings = RedisSettings()
+    worker: WorkerSettings = WorkerSettings()
 
     model_config = SettingsConfigDict(
         env_nested_delimiter="__",
