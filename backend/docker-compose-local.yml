@@ -51,7 +51,7 @@ services:
       context: .
       dockerfile: docker/local/Dockerfile
     entrypoint: []
-    command: ["uv", "run", "python", "run_worker.py"]
+    command: ["uv", "run", "arq", "worker.WorkerSettings"]
     working_dir: /app/src
     depends_on:
       db:

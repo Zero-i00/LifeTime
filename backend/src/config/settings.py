@@ -64,7 +64,6 @@ class S3Settings(BaseSettings):
     access_key: str = Field(alias="S3_ACCESS_KEY")
     secret_key: str = Field(alias="S3_SECRET_KEY")
     endpoint_url: str = Field(alias="S3_ENDPOINT_URL")
-    link_statistic_bucket: str = Field("link-statistic-bucket-1", alias="S3_LINK_STATISTIC_BUCKET")
 
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env",
