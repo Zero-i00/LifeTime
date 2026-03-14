@@ -2,6 +2,7 @@ from enum import Enum
 
 from pydantic import BaseModel, EmailStr
 
+from database.models.user import UserRole
 from modules.user.schema import UserSchemaOut
 
 
@@ -18,6 +19,7 @@ class AccessTokenPayload(BaseModel):
     sub: str
     email: str
     user_id: int
+    role: UserRole
     token_type: TokenEnum = TokenEnum.ACCESS_TOKEN.value
 
 

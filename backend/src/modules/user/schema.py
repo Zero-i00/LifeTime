@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr, ConfigDict
 
 from modules.tariff.schema import TariffSchemaOut
+from database.models.user import UserRole
 
 
 class UserSchemaIn(BaseModel):
@@ -25,5 +26,6 @@ class UserSchemaOut(BaseModel):
     email: str
     tariff: TariffSchemaOut
     last_login_at: datetime.datetime
+    role: UserRole
 
     model_config = ConfigDict(from_attributes=True)

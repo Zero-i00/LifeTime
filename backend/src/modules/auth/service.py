@@ -109,6 +109,7 @@ class AuthService:
             sub=user.email,
             user_id=user.id,
             email=user.email,
+            role=user.role
         ).model_dump()
 
         return token_strategy.encode_jwt(payload)
