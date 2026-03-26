@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 
 from lib.s3 import S3Client
 
@@ -20,3 +21,33 @@ class LinkCheckStrategy:
         key = f"{user_id}/{link_id}.json"
         existing = await self._s3.get_object(LINK_STATISTIC_BUCKET, key)
         return json.loads(existing) if existing else []
+
+
+    async def save_snapshot(self, user_id: int, link_id: int, content: str) -> None:
+        """
+        Save page snapshot (HTML/text) as schema.json in S3.
+        The key format: {user_id}/{link_id}/schema.json
+        """
+        key = f"{user_id}/{link_id}/schema.json"
+        await self._s3.put_object(LINK_STATISTIC_BUCKET, key, content.encode())
+
+    async def get_snapshot(self, user_id: int, link_id: int) -> Optional[str]:
+        """
+        Retrieve saved snapshot from S3, or None if not found.
+        """
+        key = f"{user_id}/{link_id}/schema.json"
+        data = await self._s3.get_object(LINK_STATISTIC_BUCKET, key)
+        return data.decode() if data else None
+
+    async def compare_with_snapshot(self, user_id: int, link_id: int, current_content: str) -> bool:
+        """
+        Compare current content with stored snapshot.
+        - If snapshot doesn't exist, saves current and returns False.
+        - If snapshot exists and differs, returns True (indicates change).
+        - If snapshot exists and matches, returns False.
+        """
+        snapshot = await self.get_snapshot(user_id, link_id)
+        if snapshot is None:
+            await self.save_snapshot(user_id, link_id, current_content)
+            return False
+        return snapshot != current_content
