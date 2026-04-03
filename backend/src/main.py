@@ -9,6 +9,8 @@ from modules.tariff.resolver import tariff_resolver
 from modules.project.resolver import project_resolver
 from modules.link.resolver import link_resolver
 
+from fastapi.middleware.cors import CORSMiddleware
+
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -19,6 +21,14 @@ async def lifespan(_: FastAPI):
 app = FastAPI(
     title=settings.app.name,
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.app.ALLOWED_HOSTS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 api_v1_router = APIRouter(
