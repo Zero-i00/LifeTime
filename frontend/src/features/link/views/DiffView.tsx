@@ -1,3 +1,5 @@
+"use client";
+
 import ReactDiffViewer from "react-diff-viewer-continued";
 import type { ILinkDiff } from "../types/diff.types";
 
