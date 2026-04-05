@@ -1,4 +1,5 @@
-from typing import Sequence
+import json
+from typing import Optional, Sequence
 
 from fastapi import status, HTTPException
 from sqlalchemy import select
@@ -6,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import LinkModel, ProjectModel
 from modules.link.schema import LinkSchemaOut, LinkSchemaIn, LinkSchemaUpdate, LinkSchemaFilter
+from lib.s3 import s3_client
 
 
 class LinkService:
@@ -14,6 +16,8 @@ class LinkService:
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Link not found"
         )
+        self.s3_client = s3_client
+        self.schema_bucket = "link-schemas"  
 
     async def list(self, session: AsyncSession, filters: LinkSchemaFilter) -> Sequence[LinkModel]:
         query = select(LinkModel)
@@ -71,6 +75,40 @@ class LinkService:
 
         await session.delete(link)
         await session.commit()
+
+    async def get_link_schema(self, session: AsyncSession, link_id: int, user_id: int) -> Optional[dict]:
+        """
+        Получает schema.json из S3 хранилища по link_id
+        
+        Args:
+            session: сессия БД
+            link_id: ID ссылки
+            user_id: ID пользователя для проверки прав
+            
+        Returns:
+            dict: содержимое schema.json или None если файл не найден
+        """
+     
+        link = await session.get(LinkModel, link_id)
+        if link is None or link.project.user_id != user_id:
+            raise self.not_found_exception
+        
+       
+        key = f"{user_id}/{link_id}/schema.json"
+        
+
+        existing = await self.s3_client.get_object(self.schema_bucket, key)
+        
+        if existing:
+            try:
+                return json.loads(existing)
+            except json.JSONDecodeError:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Invalid JSON format in schema file"
+                )
+        
+        return None
 
     @staticmethod
     def to_schema(obj: LinkModel) -> LinkSchemaOut:

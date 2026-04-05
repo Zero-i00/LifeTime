@@ -1,6 +1,7 @@
+import json
 from typing import List, Optional
 
-from fastapi import APIRouter, status, Depends, Query
+from fastapi import APIRouter, status, Depends, Query, HTTPException
 
 from database.models.user import UserRole
 from database.session import AsyncSessionDep
@@ -72,6 +73,65 @@ class LinkResolver:
         credentials: AccessTokenPayload = Depends(auth_service.get_access_token_payload),
     ) -> None:
         await link_service.delete(session, link_id, credentials.user_id)
+
+    @staticmethod
+    @router.get("/{link_id}/schema", status_code=status.HTTP_200_OK)
+    async def get_link_schema(
+        session: AsyncSessionDep,
+        link_id: int,
+        credentials: AccessTokenPayload = Depends(auth_service.get_access_token_payload),
+    ) -> dict:
+        """
+        Получает schema.json для указанной ссылки из S3
+        """
+        schema = await link_service.get_link_schema(session, link_id, credentials.user_id)
+        
+        if schema is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Schema not found"
+            )
+        
+        return schema
+
+    @staticmethod
+    @router.get("/{link_id}/schema/{version}", status_code=status.HTTP_200_OK)
+    async def get_link_schema_version(
+        session: AsyncSessionDep,
+        link_id: int,
+        version: str,
+        credentials: AccessTokenPayload = Depends(auth_service.get_access_token_payload),
+    ) -> dict:
+        """
+        Получает конкретную версию schema.json для указанной ссылки из S3
+        """
+        # Проверяем существование ссылки и права доступа
+        link = await session.get(LinkModel, link_id)
+        if link is None or link.project.user_id != credentials.user_id:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Link not found"
+            )
+        
+
+        key = f"{credentials.user_id}/{link_id}/schemas/schema_{version}.json"
+        
+
+        existing = await link_service.s3_client.get_object(link_service.schema_bucket, key)
+        
+        if existing:
+            try:
+                return json.loads(existing)
+            except json.JSONDecodeError:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Invalid JSON format in schema file"
+                )
+        
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Schema version {version} not found"
+        )
 
 
 link_resolver = LinkResolver()
