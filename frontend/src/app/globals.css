@@ -4,7 +4,7 @@
 	/* White */
 	--color-white: #ffffff;
 
-	/* Primary (Green — Supabase/Radix greenDark inspired) */
+	/* Primary */
 	--color-primary-100: #0e1512;
 	--color-primary-200: #121b17;
 	--color-primary-300: #132d21;
@@ -130,7 +130,7 @@
 	--color-error-shadow-md: #e5484d73;
 	--color-error-shadow-lg: #e5484d66;
 
-	/* Gray (Radix grayDark — dark-first: 100=darkest bg, 900=lightest) */
+	/* Gray */
 	--color-gray-100: #191919;
 	--color-gray-200: #222222;
 	--color-gray-300: #2a2a2a;
@@ -158,13 +158,6 @@
 	--color-dark-gray-800: #191919;
 	--color-dark-gray-900: #111111;
 
-	/* Semantic tokens */
-	--color-text-primary: #eeeeee;
-	--color-text-secondary: #b4b4b4;
-	--color-text-muted: #6e6e6e;
-	--color-border-default: #3a3a3a;
-	--color-border-secondary: #313131;
-	--color-border-strong: #484848;
 
 	/* Border radius */
 	--radius-xs: 6px;
@@ -173,13 +166,8 @@
 	--radius-md: 16px;
 	--radius-lg: 24px;
 	--radius-xl: 32px;
-	--radius-2xl: 0.75rem;
-	--radius-3xl: 1rem;
-	--radius-4xl: 1.5rem;
-	--radius-5xl: 1.8rem;
 	--radius-full: 9999px;
 
-	/* Font weights */
 	--font-weight-heading: 500;
 	--font-weight-body: 400;
 }

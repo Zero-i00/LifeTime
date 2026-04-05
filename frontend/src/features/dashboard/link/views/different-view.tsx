@@ -1,9 +1,9 @@
 "use client";
 
 import ReactDiffViewer from "react-diff-viewer-continued";
-import type { ILinkDiff } from "../types/diff.types";
+import type { TypeLinkDifferentResponse } from "../types/differentf.types";
 
-export default function DiffView({ schema, different }: ILinkDiff) {
+export default function DiffView({ schema, different }: TypeLinkDifferentResponse) {
 	return (
 		<ReactDiffViewer oldValue={schema} newValue={different} splitView={true} />
 	);

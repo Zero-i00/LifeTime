@@ -1,6 +1,6 @@
-import type { ILinkDiff } from "../types/diff.types"
+import type { TypeLinkDifferentResponse } from "../types/differentf.types"
 
-export const TestLinkData: ILinkDiff = {
+export const TestLinkData: TypeLinkDifferentResponse = {
     schema: 
     `<html lang='ru'>
         <h1>Hello!</h1>

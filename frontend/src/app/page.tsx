@@ -1,5 +1,5 @@
-import { TestLinkData } from '@/features/link/data/test.data'
-import DiffView from '@/features/link/views/DiffView'
+import { TestLinkData } from '@/features/dashboard/link/data/test.data'
+import DiffView from '@/features/dashboard/link/views/different-view'
 
 export default function Home() {
   return (
