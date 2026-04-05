@@ -23,6 +23,7 @@ class LinkCheckStrategy:
         return json.loads(existing) if existing else []
 
 
+    # FIXME Заменить content: str на dict 
     async def save_snapshot(self, user_id: int, link_id: int, content: str) -> None:
         """
         Save page snapshot (HTML/text) as schema.json in S3.
@@ -31,6 +32,7 @@ class LinkCheckStrategy:
         key = f"{user_id}/{link_id}/schema.json"
         await self._s3.put_object(LINK_STATISTIC_BUCKET, key, content.encode())
 
+    # FIXME Заменить content: str на dict
     async def get_snapshot(self, user_id: int, link_id: int) -> Optional[str]:
         """
         Retrieve saved snapshot from S3, or None if not found.
@@ -51,3 +53,6 @@ class LinkCheckStrategy:
             await self.save_snapshot(user_id, link_id, current_content)
             return False
         return snapshot != current_content
+    
+
+link_check_stategies = LinkCheckStrategy()

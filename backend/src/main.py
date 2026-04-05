@@ -8,6 +8,7 @@ from modules.user.resolver import user_resolver
 from modules.tariff.resolver import tariff_resolver
 from modules.project.resolver import project_resolver
 from modules.link.resolver import link_resolver
+from modules.contact.resolver import contact_resolver
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -40,6 +41,7 @@ api_v1_router.include_router(user_resolver.router)
 api_v1_router.include_router(tariff_resolver.router)
 api_v1_router.include_router(project_resolver.router)
 api_v1_router.include_router(link_resolver.router)
+api_v1_router.include_router(contact_resolver)
 
 app.include_router(api_v1_router)
 

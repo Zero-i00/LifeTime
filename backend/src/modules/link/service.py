@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database.models import LinkModel, ProjectModel
 from modules.link.schema import LinkSchemaOut, LinkSchemaIn, LinkSchemaUpdate, LinkSchemaFilter
 from lib.s3 import s3_client
-
+from modules.link.strategies.check import link_check_stategies
 
 class LinkService:
     def __init__(self):
@@ -93,22 +93,15 @@ class LinkService:
         if link is None or link.project.user_id != user_id:
             raise self.not_found_exception
         
-       
-        key = f"{user_id}/{link_id}/schema.json"
-        
 
-        existing = await self.s3_client.get_object(self.schema_bucket, key)
-        
-        if existing:
-            try:
-                return json.loads(existing)
-            except json.JSONDecodeError:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="Invalid JSON format in schema file"
+        snapshot = link_check_stategies.get_snapshot(user_id, link_id)
+        if not snapshot:
+            raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Link snapshot is not found"
                 )
         
-        return None
+        return snapshot
 
     @staticmethod
     def to_schema(obj: LinkModel) -> LinkSchemaOut:
