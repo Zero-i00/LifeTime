@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* biome-ignore lint/suspicious/noUnknownAtRules: <tailwindcss> */
 @theme {
 	/* White */
 	--color-white: #ffffff;
@@ -236,6 +237,14 @@
 	--icon-md: 24px;
 	--icon-lg: 32px;
 	--icon-xl: 48px;
+
+	/* Radius aliases for UI kit components */
+	--rounded: var(--radius-xs);
+	--rounded-sm: var(--radius-tn);
+}
+
+html {
+	scroll-behavior: smooth;
 }
 
 html body {
