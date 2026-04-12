@@ -1,6 +1,5 @@
 import type {AuthResponse, TypeLoginRequest, TypeRegisterRequest} from "@/features/public/auth/types/auth.types";
 import {axiosClient} from "@/shared/api/interceptors/root.interceptor";
-import {axiosAuth} from "@/shared/api/interceptors/auth.interceptor";
 
 
 class AuthService {
@@ -23,13 +22,13 @@ class AuthService {
     }
 
     async refresh() {
-        const response = await axiosAuth.post<AuthResponse>(`${this.PREFIX}/refresh_token`)
+        const response = await axiosClient.post<AuthResponse>(`${this.PREFIX}/refresh_token`)
 
         return response.data
     }
 
     async logout() {
-        const response = await axiosAuth.post<boolean>(`${this.PREFIX}/logout`)
+        const response = await axiosClient.post<boolean>(`${this.PREFIX}/logout`)
 
         return response.data
     }
