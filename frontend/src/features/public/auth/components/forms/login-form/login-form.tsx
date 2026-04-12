@@ -1,35 +1,30 @@
 'use client'
 
-import {type ComponentProps, useTransition} from "react";
-import {LoginSchema} from "@/features/public/auth/schemas/auth.schema";
-import type {TypeLoginRequest} from "@/features/public/auth/types/auth.types";
-import {useForm} from "react-hook-form";
-import {valibotResolver} from "@hookform/resolvers/valibot";
-import {useMutation} from "@tanstack/react-query";
-import {authQuery} from "@/features/public/auth/queries/auth.query";
-import toast from "react-hot-toast";
-import {extractError} from "@/shared/api/api.error";
-import {useRouter} from "next/navigation";
-import {DASHBOARD_PAGE} from "@/shared/configs/page.config";
-import {twMerge} from "tailwind-merge";
+import { useTransition } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { valibotResolver } from '@hookform/resolvers/valibot'
+import { useMutation } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import toast from 'react-hot-toast'
+import { LoginSchema } from '@/features/public/auth/schemas/auth.schema'
+import type { TypeLoginRequest } from '@/features/public/auth/types/auth.types'
+import { authQuery } from '@/features/public/auth/queries/auth.query'
+import { extractError } from '@/shared/api/api.error'
+import { DASHBOARD_PAGE, PUBLIC_PAGE } from '@/shared/configs/page.config'
+import { Button, Input, Logo, PasswordInput, Typography } from '@/shared/components/ui'
 
-const FormSchema = LoginSchema
 type FormData = TypeLoginRequest
 
-export function LoginForm({className, ...rest}: ComponentProps<'form'>) {
-
+export function LoginForm() {
     const router = useRouter()
+    const [, startTransition] = useTransition()
+    const { mutate, isPending } = useMutation(authQuery.login())
 
-    const [isMouting, startTransition] = useTransition()
-    const {mutate, isPending} = useMutation(authQuery.login())
-
-    const {
-        reset,
-        register,
-        handleSubmit,
-    } = useForm<FormData>({
+    const { control, handleSubmit, reset } = useForm<FormData>({
         mode: 'onChange',
-        resolver: valibotResolver(FormSchema)
+        resolver: valibotResolver(LoginSchema),
+        defaultValues: { email: '', password: '' }
     })
 
     const submit = (data: FormData) => {
@@ -48,12 +43,63 @@ export function LoginForm({className, ...rest}: ComponentProps<'form'>) {
     }
 
     return (
-        <form className={twMerge(`flex flex-col gap-4 bg-gray-100`, className)} {...rest}>
-            <input {...register('email')} required className={`border`} type="text" placeholder={'email'}/>
-            <input {...register('password')} required className={`border`} type="password" placeholder={'password'}/>
-            <button type={'submit'} onClick={handleSubmit(submit)}>
-                Войти
-            </button>
-        </form>
+        <div className="bg-[#161616] border border-[var(--color-secondary-200)] rounded-[16px] p-9 w-[360px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+            <div className="flex justify-center mb-7">
+                <Logo size="md" />
+            </div>
+
+            <div className="mb-6">
+                <Typography variant="h5" className="text-white mb-1">
+                    Вход в аккаунт
+                </Typography>
+                <p className="text-sm text-[var(--color-secondary-700)]">
+                    Нет аккаунта?{' '}
+                    <Link
+                        href={PUBLIC_PAGE.REGISTER}
+                        className="text-[var(--color-primary-500)] hover:underline"
+                    >
+                        Зарегистрируйтесь
+                    </Link>
+                </p>
+            </div>
+
+            <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-3">
+                <Controller
+                    name="email"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                        <Input
+                            {...field}
+                            type="email"
+                            placeholder="Email"
+                            error={fieldState.error?.message}
+                        />
+                    )}
+                />
+
+                <Controller
+                    name="password"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                        <PasswordInput
+                            value={field.value ?? ''}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            ref={field.ref}
+                            placeholder="Пароль"
+                            error={fieldState.error?.message}
+                        />
+                    )}
+                />
+
+                <Button
+                    type="submit"
+                    isLoading={isPending}
+                    className="w-full mt-2"
+                >
+                    Войти
+                </Button>
+            </form>
+        </div>
     )
 }
