@@ -12,7 +12,7 @@ from config import IS_DEBUG, settings
 from database.models.link import LinkModel
 from database.session import session_factory
 from lib.s3 import s3_client
-from modules.link.strategies.check import LinkCheckStrategy
+from modules.link.strategies.check import check_strategy
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ def _error_result(elapsed_ms: int, ssl_valid: Optional[bool], error: Exception) 
 
 class LinkCheckTask:
     def __init__(self):
-        self._strategy = LinkCheckStrategy(s3_client)
+        pass
 
     async def _check_single_link(
         self,
@@ -99,7 +99,7 @@ class LinkCheckTask:
                 async with semaphore:
                     check_data = await self._check_single_link(http_session, link.url, timeout)
                     if not IS_DEBUG:
-                        await self._strategy.save_check(link.project.user_id, link.id, check_data)
+                        await check_strategy.save_check(link.project.user_id, link.id, check_data)
                     status = "up" if check_data["is_up"] else "down"
                     logger.info(f"Link {link.id} ({link.url}): {status}")
 

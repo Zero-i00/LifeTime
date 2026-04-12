@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database.models import LinkModel, ProjectModel
 from modules.link.schema import LinkSchemaOut, LinkSchemaIn, LinkSchemaUpdate, LinkSchemaFilter
 from lib.s3 import s3_client
-from modules.link.strategies.check import link_check_stategies
+from modules.link.strategies.check import check_strategy
 
 class LinkService:
     def __init__(self):
@@ -94,14 +94,8 @@ class LinkService:
             raise self.not_found_exception
         
 
-        snapshot = link_check_stategies.get_snapshot(user_id, link_id)
-        if not snapshot:
-            raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Link snapshot is not found"
-                )
-        
-        return snapshot
+        # TODO: replaced in Task 5 with SchemaStrategy.get_snapshot
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Schema not available yet")
 
     @staticmethod
     def to_schema(obj: LinkModel) -> LinkSchemaOut:
