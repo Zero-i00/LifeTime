@@ -1,0 +1,25 @@
+.logo {
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--color-white);
+  letter-spacing: -0.02em;
+}
+
+.logo--sm {
+  font-size: var(--font-size-h5);
+  line-height: var(--line-height-h5);
+}
+
+.logo--md {
+  font-size: var(--font-size-h4);
+  line-height: var(--line-height-h4);
+}
+
+.logo--lg {
+  font-size: var(--font-size-h3);
+  line-height: var(--line-height-h3);
+}
+
+.accent {
+  color: var(--color-primary-500);
+}
