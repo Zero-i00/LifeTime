@@ -1,7 +1,6 @@
-import json
 from typing import List, Optional
 
-from fastapi import APIRouter, status, Depends, Query, HTTPException
+from fastapi import APIRouter, status, Depends, Query
 
 from database.models.user import UserRole
 from database.session import AsyncSessionDep
@@ -26,8 +25,11 @@ class LinkResolver:
         credentials: AccessTokenPayload = Depends(auth_service.get_access_token_payload),
     ) -> List[LinkSchemaOut]:
         is_admin = credentials.role == UserRole.ADMIN.value
-        filters = LinkSchemaFilter(url=url, project_id=project_id, user_id=None if is_admin else credentials.user_id)
-
+        filters = LinkSchemaFilter(
+            url=url,
+            project_id=project_id,
+            user_id=None if is_admin else credentials.user_id,
+        )
         links = await link_service.list(session, filters)
         return [link_service.to_schema(link) for link in links]
 
@@ -40,9 +42,7 @@ class LinkResolver:
     ) -> LinkSchemaOut:
         is_admin = credentials.role == UserRole.ADMIN.value
         filters = LinkSchemaFilter(user_id=None if is_admin else credentials.user_id)
-
-        link = await link_service.retrieve(session, link_id, filters)
-        return link_service.to_schema(link)
+        return await link_service.retrieve_with_schema(session, link_id, filters)
 
     @staticmethod
     @router.post("/", status_code=status.HTTP_201_CREATED)
@@ -75,62 +75,26 @@ class LinkResolver:
         await link_service.delete(session, link_id, credentials.user_id)
 
     @staticmethod
-    @router.get("/{link_id}/schema", status_code=status.HTTP_200_OK)
-    async def get_link_schema(
+    @router.post("/{link_id}/schema/accept", status_code=status.HTTP_204_NO_CONTENT)
+    async def accept_schema(
         session: AsyncSessionDep,
         link_id: int,
         credentials: AccessTokenPayload = Depends(auth_service.get_access_token_payload),
-    ) -> dict:
-        """
-        Получает schema.json для указанной ссылки из S3
-        """
-        schema = await link_service.get_link_schema(session, link_id, credentials.user_id)
-        
-        if schema is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Schema not found"
-            )
-        
-        return schema
+    ) -> None:
+        """Принимает изменения схемы: текущий different становится новым baseline."""
+        await link_service.accept_schema(session, link_id, credentials.user_id)
 
     @staticmethod
     @router.get("/{link_id}/schema/{version}", status_code=status.HTTP_200_OK)
-    async def get_link_schema_version(
+    async def get_schema_version(
         session: AsyncSessionDep,
         link_id: int,
         version: str,
         credentials: AccessTokenPayload = Depends(auth_service.get_access_token_payload),
     ) -> dict:
-        """
-        Получает конкретную версию schema.json для указанной ссылки из S3
-        """
-        # Проверяем существование ссылки и права доступа
-        link = await session.get(LinkModel, link_id)
-        if link is None or link.project.user_id != credentials.user_id:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Link not found"
-            )
-        
-
-        key = f"{credentials.user_id}/{link_id}/schemas/schema_{version}.json"
-        
-
-        existing = await link_service.s3_client.get_object(link_service.schema_bucket, key)
-        
-        if existing:
-            try:
-                return json.loads(existing)
-            except json.JSONDecodeError:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="Invalid JSON format in schema file"
-                )
-        
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Schema version {version} not found"
+        """Получает конкретную версию schema.json из бакета link-schemas."""
+        return await link_service.get_schema_version(
+            session, link_id, credentials.user_id, version
         )
 
 
