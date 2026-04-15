@@ -9,6 +9,7 @@ from aiohttp import ClientConnectorError, ClientSSLError, ServerTimeoutError
 from fastapi import status, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from config import IS_DEBUG, settings
 from database.models import LinkModel, ProjectModel
@@ -62,7 +63,7 @@ class LinkService:
     async def retrieve(
         self, session: AsyncSession, link_id: int, filters: LinkSchemaFilter
     ) -> LinkModel:
-        link = await session.get(LinkModel, link_id)
+        link = await session.get(LinkModel, link_id, options=[selectinload(LinkModel.project)])
         if link is None:
             raise self.not_found_exception
         if filters.user_id is not None and link.project.user_id != filters.user_id:
@@ -100,7 +101,7 @@ class LinkService:
         user_id: int,
         obj: LinkSchemaUpdate,
     ) -> LinkModel:
-        link = await session.get(LinkModel, link_id)
+        link = await session.get(LinkModel, link_id, options=[selectinload(LinkModel.project)])
         if link is None or link.project.user_id != user_id:
             raise self.not_found_exception
 
@@ -114,7 +115,7 @@ class LinkService:
     async def delete(
         self, session: AsyncSession, link_id: int, user_id: int
     ) -> None:
-        link = await session.get(LinkModel, link_id)
+        link = await session.get(LinkModel, link_id, options=[selectinload(LinkModel.project)])
         if link is None or link.project.user_id != user_id:
             raise self.not_found_exception
 
@@ -125,7 +126,7 @@ class LinkService:
         self, session: AsyncSession, link_id: int, user_id: int
     ) -> None:
         """Принимает изменения: текущий different становится новым baseline."""
-        link = await session.get(LinkModel, link_id)
+        link = await session.get(LinkModel, link_id, options=[selectinload(LinkModel.project)])
         if link is None or link.project.user_id != user_id:
             raise self.not_found_exception
 
@@ -136,7 +137,12 @@ class LinkService:
                 detail="Schema not found",
             )
 
-        new_baseline = snapshot["different"]
+        new_baseline = snapshot.get("different")
+        if not new_baseline:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Schema has no 'different' field to accept",
+            )
         tag, attrs = SchemaStrategy.extract_root_info(new_baseline)
 
         await SchemaStrategy.save_snapshot(
@@ -159,7 +165,7 @@ class LinkService:
         version: str,
     ) -> dict:
         """Получает версионированную схему из бакета link-schemas."""
-        link = await session.get(LinkModel, link_id)
+        link = await session.get(LinkModel, link_id, options=[selectinload(LinkModel.project)])
         if link is None or link.project.user_id != user_id:
             raise self.not_found_exception
 
