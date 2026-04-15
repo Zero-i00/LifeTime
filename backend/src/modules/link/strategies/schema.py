@@ -17,8 +17,9 @@ class SchemaStrategy:
     @staticmethod
     def normalize_html(raw_html: str) -> str:
         """Нормализует HTML: prettify + удаляет script/style + сортирует атрибуты."""
-        if len(raw_html.encode("utf-8", errors="replace")) > MAX_HTML_BYTES:
-            raw_html = raw_html[:MAX_HTML_BYTES]
+        raw_bytes = raw_html.encode("utf-8", errors="replace")
+        if len(raw_bytes) > MAX_HTML_BYTES:
+            raw_html = raw_bytes[:MAX_HTML_BYTES].decode("utf-8", errors="ignore")
 
         soup = BeautifulSoup(raw_html, "html.parser")
 
@@ -50,7 +51,8 @@ class SchemaStrategy:
         """Процент изменений (0.0 – 100.0) через difflib."""
         if old == new:
             return 0.0
-        ratio = difflib.SequenceMatcher(None, old, new).ratio()
+        MAX_COMPARE = 100_000  # prevent O(n²) blocking on large pages
+        ratio = difflib.SequenceMatcher(None, old[:MAX_COMPARE], new[:MAX_COMPARE]).ratio()
         return round((1.0 - ratio) * 100, 2)
 
     @staticmethod
