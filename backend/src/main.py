@@ -41,7 +41,7 @@ api_v1_router.include_router(user_resolver.router)
 api_v1_router.include_router(tariff_resolver.router)
 api_v1_router.include_router(project_resolver.router)
 api_v1_router.include_router(link_resolver.router)
-api_v1_router.include_router(contact_resolver)
+api_v1_router.include_router(contact_resolver.router)
 
 app.include_router(api_v1_router)
 

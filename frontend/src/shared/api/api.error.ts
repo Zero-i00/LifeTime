@@ -4,7 +4,11 @@ import {SOMETHING_WRONG} from "@/shared/constants/error.constants";
 
 export function extractError(error: Error): string {
     if (error instanceof AxiosError) {
-        return error.response?.data?.detail ?? SOMETHING_WRONG
+        const detail = error.response?.data?.detail
+        if (Array.isArray(detail)) {
+            return detail.map((d: { msg?: string }) => d.msg ?? SOMETHING_WRONG).join(', ')
+        }
+        return detail ?? SOMETHING_WRONG
     }
 
     return error.message

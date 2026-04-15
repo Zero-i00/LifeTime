@@ -22,18 +22,9 @@ dependencies = [
 where = ["backend/src"]
 include = ["*"]
 
-[tool.pytest.ini_options]
-pythonpath = ["backend/src"]
-asyncio_mode = "auto"
-
 [tool.mypy]
 mypy_path = ["backend/src"]
 
-[dependency-groups]
-dev = [
-    "pytest>=9.0.3",
-    "pytest-asyncio>=0.23",
-]
 
 [project.optional-dependencies]
 dev = ["watchfiles"]

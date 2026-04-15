@@ -19,6 +19,16 @@ const options: CreateAxiosDefaults = {
 
 export const axiosAuth = axios.create(options)
 
+axiosAuth.interceptors.request.use(config => {
+    const token = tokenService.get()
+
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+    }
+
+    return config
+})
+
 axiosAuth.interceptors.response.use(
     response => response,
     async (error) => {

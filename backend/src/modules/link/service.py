@@ -11,7 +11,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from config import IS_DEBUG, settings
+from config import settings
 from database.models import LinkModel, ProjectModel
 from lib.s3 import s3_client
 from modules.link.schema import LinkSchemaOut, LinkSchemaIn, LinkSchemaUpdate, LinkSchemaFilter
@@ -234,8 +234,7 @@ class LinkService:
         except Exception as e:
             check_data = _error_result(elapsed(), ssl_valid=None, error=e)
 
-        if not IS_DEBUG:
-            await CheckStrategy.save_check(user_id, link_id, check_data)
+        await CheckStrategy.save_check(user_id, link_id, check_data)
 
         if html is not None:
             await self._update_schema(user_id, link_id, html)
