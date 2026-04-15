@@ -12,7 +12,7 @@ mock_settings.s3.secret_key = "test-secret"
 mock_settings.s3.endpoint_url = "http://localhost:9000"
 
 # Patch at the module level so downstream imports (lib.s3, etc.) get the mock
-sys.modules["config"] = MagicMock(settings=mock_settings)
+sys.modules["config"] = MagicMock(settings=mock_settings, IS_DEBUG=False)
 
 # Also patch the specific attribute used by lib.s3
 import config  # noqa: E402 — must come after sys.modules manipulation
