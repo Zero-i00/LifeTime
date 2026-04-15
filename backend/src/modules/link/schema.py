@@ -25,5 +25,10 @@ class LinkSchemaOut(BaseModel):
     project_id: int
     created_at: datetime.datetime
     updated_at: datetime.datetime
+    schema: Optional[str] = None
+    different: Optional[str] = None
+    tag: Optional[str] = None
+    attrs: Optional[dict] = None
+    change_percentage: Optional[float] = None
 
     model_config = ConfigDict(from_attributes=True)
