@@ -1,6 +1,0 @@
-export { ProfileView } from './views/profile-view'
-export { UserBadge } from './components/user-badge'
-export { userQuery } from './queries/user.query'
-export { userService } from './services/user.service'
-export { getInitials } from './utils/initials'
-export type { TypeUserProfileUpdate } from './types/user.types'

@@ -1,3 +1,0 @@
-include:
-  - backend/docker-compose-local.yml
-  - frontend/docker-compose-local.yml
