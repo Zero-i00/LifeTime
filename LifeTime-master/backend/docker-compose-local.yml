@@ -1,0 +1,77 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  db:
+    image: postgres:17.4-alpine
+    container_name: db
+    volumes:
+      - db:/var/lib/postgresql/data
+    env_file:
+      - .env
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    container_name: backend
+    build:
+      context: .
+      dockerfile: docker/local/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT:-8000}:${APP_PORT:-8000}"
+    networks:
+      - app-network
+    restart: on-failure
+
+  worker:
+    container_name: worker
+    build:
+      context: .
+      dockerfile: docker/local/Dockerfile
+    entrypoint: []
+    command: ["uv", "run", "arq", "worker.WorkerSettings"]
+    working_dir: /app/src
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    networks:
+      - app-network
+    restart: on-failure
+
+volumes:
+  db:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge

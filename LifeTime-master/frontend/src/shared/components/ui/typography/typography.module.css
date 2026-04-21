@@ -1,0 +1,32 @@
+.typography {
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  --typo-font-size: var(--font-size-body-1);
+  --typo-line-height: var(--line-height-body-1);
+  --typo-font-weight: var(--font-weight-body-1);
+}
+
+:where(.typography) {
+  font-size: var(--typo-font-size);
+  line-height: var(--typo-line-height);
+  font-weight: var(--typo-font-weight);
+}
+
+.typography--h1 { --typo-font-size: var(--font-size-h1); --typo-line-height: var(--line-height-h1); --typo-font-weight: var(--font-weight-h1); }
+.typography--h2 { --typo-font-size: var(--font-size-h2); --typo-line-height: var(--line-height-h2); --typo-font-weight: var(--font-weight-h2); }
+.typography--h3 { --typo-font-size: var(--font-size-h3); --typo-line-height: var(--line-height-h3); --typo-font-weight: var(--font-weight-h3); }
+.typography--h4 { --typo-font-size: var(--font-size-h4); --typo-line-height: var(--line-height-h4); --typo-font-weight: var(--font-weight-h4); }
+.typography--h5 { --typo-font-size: var(--font-size-h5); --typo-line-height: var(--line-height-h5); --typo-font-weight: var(--font-weight-h5); }
+.typography--h6 { --typo-font-size: var(--font-size-h6); --typo-line-height: var(--line-height-h6); --typo-font-weight: var(--font-weight-h6); }
+
+.typography--subtitle-1 { --typo-font-size: var(--font-size-subtitle-1); --typo-line-height: var(--line-height-subtitle-1); --typo-font-weight: var(--font-weight-subtitle-1); }
+.typography--subtitle-2 { --typo-font-size: var(--font-size-subtitle-2); --typo-line-height: var(--line-height-subtitle-2); --typo-font-weight: var(--font-weight-subtitle-2); }
+
+.typography--body-1 { --typo-font-size: var(--font-size-body-1); --typo-line-height: var(--line-height-body-1); --typo-font-weight: var(--font-weight-body-1); }
+.typography--body-2 { --typo-font-size: var(--font-size-body-2); --typo-line-height: var(--line-height-body-2); --typo-font-weight: var(--font-weight-body-2); }
+
+.typography--caption { --typo-font-size: var(--font-size-caption); --typo-line-height: var(--line-height-caption); --typo-font-weight: var(--font-weight-caption); }
+
+.typography--overline { --typo-font-size: var(--font-size-overline); --typo-line-height: var(--line-height-overline); --typo-font-weight: var(--font-weight-overline); }
+:where(.typography--overline) { text-transform: uppercase; letter-spacing: 1px; }
