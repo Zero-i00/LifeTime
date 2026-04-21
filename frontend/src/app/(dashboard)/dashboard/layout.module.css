@@ -1,0 +1,11 @@
+.layout {
+	display: grid;
+	grid-template-columns: 260px 1fr;
+	min-height: 100vh;
+	background-color: var(--color-secondary-100);
+}
+
+.main {
+	overflow: auto;
+	background-color: #111111;
+}

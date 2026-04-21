@@ -1,0 +1,73 @@
+.root {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 12px;
+	border-radius: 10px;
+	text-decoration: none;
+	transition: background-color 0.15s;
+	cursor: pointer;
+}
+
+.root:hover {
+	background-color: var(--color-secondary-200);
+}
+
+.info {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	overflow: hidden;
+}
+
+.name {
+	font-size: 14px;
+	font-weight: 500;
+	color: var(--color-white);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.email {
+	font-size: 12px;
+	color: var(--color-secondary-700);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.skeleton {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 12px;
+}
+
+.skeleton__avatar {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	background-color: var(--color-secondary-200);
+	flex-shrink: 0;
+}
+
+.skeleton__lines {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.skeleton__line {
+	height: 12px;
+	border-radius: 4px;
+	background-color: var(--color-secondary-200);
+}
+
+.skeleton__line--name {
+	width: 100px;
+}
+
+.skeleton__line--email {
+	width: 130px;
+}
