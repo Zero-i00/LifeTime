@@ -1,12 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import ReactDiffViewer from "react-diff-viewer-continued";
 import { linkQueries } from "../queries/link.queries";
 
 export function LinkView({ id }: { id: string }) {
-	const { data } = useQuery(linkQueries.retrieve(id));
+	const { data } = useSuspenseQuery(linkQueries.retrieve(id));
 
-	if (!data) return null;
-
+	// TODO view all info
 	return (
 		<ReactDiffViewer
 			oldValue={data.schema}
